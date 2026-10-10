@@ -1,7 +1,84 @@
+
 {% extends 'base.html' %}
 {% block title %}{{ guild.name }} — Novix{% endblock %}
+
 {% block content %}
-<div class="server-page-head"><a class="back-link" href="{{ url_for('index') }}">← Back to servers</a><div class="server-page-title"><span class="server-avatar large">{% if guild.icon %}<img src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png?size=128" alt="">{% else %}{{ guild.name[:1]|upper }}{% endif %}</span><div><div class="eyebrow muted">SERVER DASHBOARD</div><h1>{{ guild.name }}</h1><p>Server access verified for your Discord account.</p></div></div></div>
-<div class="notice-card"><span class="notice-icon">✦</span><div><h2>Your dashboard is connected.</h2><p>This is the first version of Novix Dashboard. The server selector and Discord sign-in are ready; settings that change your bot are not connected yet.</p></div></div>
-<div class="feature-grid server-feature-grid"><article class="feature-card"><div class="feature-top"><span class="feature-icon icon-purple">⌘</span><span class="planned">COMING SOON</span></div><h3>Moderation</h3><p>Moderation settings and case history.</p></article><article class="feature-card"><div class="feature-top"><span class="feature-icon icon-blue">⌁</span><span class="planned">COMING SOON</span></div><h3>AutoMod</h3><p>Anti-spam rules and security settings.</p></article><article class="feature-card"><div class="feature-top"><span class="feature-icon icon-pink">▤</span><span class="planned">COMING SOON</span></div><h3>Tickets</h3><p>Ticket panels and support configuration.</p></article></div>
+<div class="server-page-head">
+  <a class="back-link" href="{{ url_for('index') }}">← Back to servers</a>
+
+  <div class="server-page-title">
+    <span class="server-avatar large">
+      {% if guild.icon %}
+        <img src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png?size=128" alt="">
+      {% else %}
+        {{ guild.name[:1]|upper }}
+      {% endif %}
+    </span>
+    <div>
+      <div class="eyebrow muted">NOVIX CONTROL PANEL</div>
+      <h1>{{ guild.name }}</h1>
+      <p>Manage your server's Novix settings.</p>
+    </div>
+  </div>
+</div>
+
+<div class="feature-grid server-feature-grid">
+
+  <a class="feature-card" href="#overview">
+    <div class="feature-top">
+      <span class="feature-icon icon-blue">⌂</span>
+    </div>
+    <h3>Overview</h3>
+    <p>View your server and bot information.</p>
+  </a>
+
+  <a class="feature-card" href="#moderation">
+    <div class="feature-top">
+      <span class="feature-icon icon-purple">⚒</span>
+    </div>
+    <h3>Moderation</h3>
+    <p>Manage warnings, timeouts and bans.</p>
+  </a>
+
+  <a class="feature-card" href="#automod">
+    <div class="feature-top">
+      <span class="feature-icon icon-pink">⛨</span>
+    </div>
+    <h3>AutoMod</h3>
+    <p>Configure anti-spam and message filters.</p>
+  </a>
+
+  <a class="feature-card" href="#autoroles">
+    <div class="feature-top">
+      <span class="feature-icon icon-blue">♙</span>
+    </div>
+    <h3>Autoroles</h3>
+    <p>Choose roles assigned to new members.</p>
+  </a>
+
+  <a class="feature-card" href="#logs">
+    <div class="feature-top">
+      <span class="feature-icon icon-purple">▤</span>
+    </div>
+    <h3>Logs</h3>
+    <p>Choose where server events are recorded.</p>
+  </a>
+
+  <a class="feature-card" href="#tickets">
+    <div class="feature-top">
+      <span class="feature-icon icon-pink">✉</span>
+    </div>
+    <h3>Tickets</h3>
+    <p>Manage support panels and ticket settings.</p>
+  </a>
+
+</div>
+
+<div class="notice-card" style="margin-top: 24px;">
+  <span class="notice-icon">✦</span>
+  <div>
+    <h2>Welcome to Novix</h2>
+    <p>Your control panel layout is ready. The settings will need to be connected to your Discord bot before changes can take effect.</p>
+  </div>
+</div>
 {% endblock %}
