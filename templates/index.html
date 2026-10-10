@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Novix — Discord Dashboard{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="eyebrow"><span class="eyebrow-icon">✦</span> YOUR SERVER. YOUR RULES.</div>
+  <h1>Manage your<br><span>community</span> better.</h1>
+  <p class="hero-copy">Everything for your Discord server, brought together in one clean space. Welcome to the Novix dashboard.</p>
+  {% if user %}
+    <div class="welcome-line"><span class="welcome-check">✓</span> Signed in as <strong>{{ user.username }}</strong></div>
+    <a class="button button-primary" href="#servers">Choose a server <span class="button-arrow">↘</span></a>
+  {% else %}
+    <a class="button button-primary" href="{{ url_for('login') }}"><span class="discord-glyph">◉</span> Continue with Discord <span class="button-arrow">↗</span></a>
+    <div class="safe-note"><span>▣</span> Secure Discord sign-in <i></i> No password stored here</div>
+  {% endif %}
+  <div class="hero-orbit orbit-a"></div><div class="hero-orbit orbit-b"></div><div class="hero-symbol"><span class="symbol-bar"></span><span class="symbol-bar"></span><span class="symbol-bar"></span></div>
+</section>
+<section class="features-section">
+  <div class="section-heading"><div><div class="eyebrow muted">MADE FOR YOUR SERVER</div><h2>One hub. More control.</h2></div><span class="section-count">01 <span>/</span> 03</span></div>
+  <div class="feature-grid">
+    <article class="feature-card"><div class="feature-top"><span class="feature-icon icon-purple">⌘</span><span class="planned">PLANNED</span></div><h3>Moderation</h3><p>Keep your server organized with quick access to moderation tools and records.</p><div class="feature-line"><span></span></div></article>
+    <article class="feature-card"><div class="feature-top"><span class="feature-icon icon-blue">⌁</span><span class="planned">PLANNED</span></div><h3>AutoMod & security</h3><p>Configure anti-spam protection and help keep unwanted activity under control.</p><div class="feature-line blue-line"><span></span></div></article>
+    <article class="feature-card"><div class="feature-top"><span class="feature-icon icon-pink">▤</span><span class="planned">PLANNED</span></div><h3>Tickets & support</h3><p>Make support easier to manage with a central place for ticket settings.</p><div class="feature-line pink-line"><span></span></div></article>
+  </div>
+</section>
+{% if user %}
+<section class="servers-section" id="servers">
+  <div class="section-heading"><div><div class="eyebrow muted">YOUR DISCORD</div><h2>Select a server</h2></div><span class="server-count">{{ guilds|length }} available</span></div>
+  {% if guilds %}<div class="server-grid">{% for guild in guilds %}<a class="server-card" href="{{ url_for('server', guild_id=guild.id) }}"><span class="server-avatar">{% if guild.icon %}<img src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png?size=128" alt="">{% else %}{{ guild.name[:1]|upper }}{% endif %}</span><span class="server-info"><strong>{{ guild.name }}</strong><small>{% if guild.owner %}Server owner{% else %}Manage Server access{% endif %}</small></span><span class="server-arrow">↗</span></a>{% endfor %}</div>
+  {% else %}<div class="empty-state"><span class="empty-icon">⌂</span><h3>No manageable servers found</h3><p>You need Administrator or Manage Server permission in a server for it to appear here.</p></div>{% endif %}
+</section>
+{% endif %}
+<div class="bottom-note"><span class="note-spark">✦</span><span><strong>Made to feel simple.</strong> Novix keeps your community tools in one place.</span><span class="note-right">NOVIX / DASHBOARD</span></div>
+{% endblock %}

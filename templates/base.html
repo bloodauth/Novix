@@ -1,1 +1,27 @@
-
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b13">
+  <title>{% block title %}Novix Dashboard{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar wrap">
+    <a class="brand" href="{{ url_for('index') }}" aria-label="Novix home">
+      <span class="brand-mark"><span></span><span></span><span></span></span>
+      <span>NOVIX<span class="brand-dot">.</span></span>
+    </a>
+    <nav class="topnav"><span class="status-dot"></span><span>Dashboard</span>
+      {% if user %}<div class="nav-user">{% if user.avatar %}<img src="https://cdn.discordapp.com/avatars/{{ user.id }}/{{ user.avatar }}.png?size=64" alt="">{% else %}<span class="avatar-fallback">N</span>{% endif %}<span>{{ user.username }}</span><form action="{{ url_for('logout') }}" method="post"><button class="logout" type="submit">Log out</button></form></div>{% endif %}
+    </nav>
+  </header>
+  <main class="wrap main-content">{% block content %}{% endblock %}</main>
+  <footer class="wrap footer"><a class="footer-brand" href="{{ url_for('index') }}">NOVIX<span class="brand-dot">.</span></a><span>Built for communities that run better.</span><span class="footer-right">Dashboard preview · v1.0</span></footer>
+</body>
+</html>
