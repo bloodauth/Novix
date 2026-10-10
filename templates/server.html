@@ -3,11 +3,51 @@
 {% block title %}{{ guild.name }} — Novix{% endblock %}
 
 {% block content %}
-<div class="server-page-head">
-  <a class="back-link" href="{{ url_for('index') }}">← Back to servers</a>
+<style>
+  .nv-head { margin-bottom: 28px; }
+  .nv-back { display: inline-block; margin-bottom: 20px; color: var(--text-muted, #9ca3af); text-decoration: none; }
+  .nv-title { display: flex; align-items: center; gap: 16px; }
+  .nv-title h1 { margin: 4px 0; }
+  .nv-title p { margin: 4px 0; color: var(--text-muted, #9ca3af); }
+  .nv-avatar { width: 68px; height: 68px; border-radius: 20px; display: grid; place-items: center; overflow: hidden; background: var(--card-bg, #20232c); font-size: 26px; font-weight: 700; }
+  .nv-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .nv-layout { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 24px; align-items: start; }
+  .nv-nav, .nv-panel { background: var(--card-bg, #171a23); border: 1px solid var(--border-color, #2c303b); border-radius: 16px; padding: 18px; }
+  .nv-nav { position: sticky; top: 20px; }
+  .nv-nav a { display: block; padding: 11px 12px; margin: 3px 0; border-radius: 9px; color: inherit; text-decoration: none; }
+  .nv-nav a:hover { background: var(--hover-bg, #252936); }
+  .nv-panel { margin-bottom: 18px; scroll-margin-top: 20px; }
+  .nv-panel h2 { margin: 0 0 6px; }
+  .nv-desc { color: var(--text-muted, #9ca3af); margin: 0 0 20px; font-size: 14px; }
+  .nv-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+  .nv-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .nv-field label { font-size: 14px; font-weight: 600; }
+  .nv-field small { color: var(--text-muted, #9ca3af); font-size: 12px; }
+  .nv-field input, .nv-field select { width: 100%; box-sizing: border-box; padding: 11px 12px; border-radius: 9px; border: 1px solid var(--border-color, #383d4b); background: var(--input-bg, #11141c); color: inherit; }
+  .nv-check { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid var(--border-color, #2c303b); border-radius: 10px; }
+  .nv-check input { margin-top: 4px; }
+  .nv-check span { display: flex; flex-direction: column; gap: 4px; }
+  .nv-check small { color: var(--text-muted, #9ca3af); }
+  .nv-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 20px; }
+  .nv-btn { cursor: pointer; padding: 10px 16px; border-radius: 9px; border: 1px solid var(--border-color, #383d4b); background: var(--card-bg, #20232c); color: inherit; font-weight: 600; }
+  .nv-btn-primary { background: #5865f2; border-color: #5865f2; color: white; }
+  .nv-status { font-size: 13px; color: var(--text-muted, #9ca3af); }
+  .nv-status[data-state="error"] { color: #f87171; }
+  .nv-status[data-state="success"] { color: #4ade80; }
+  .nv-wide { grid-column: 1 / -1; }
+  @media (max-width: 760px) {
+    .nv-layout { grid-template-columns: 1fr; }
+    .nv-nav { position: static; }
+    .nv-nav-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .nv-fields { grid-template-columns: 1fr; }
+    .nv-wide { grid-column: auto; }
+  }
+</style>
 
-  <div class="server-page-title">
-    <span class="server-avatar large">
+<div class="nv-head">
+  <a class="nv-back" href="{{ url_for('index') }}">← Back to servers</a>
+  <div class="nv-title">
+    <span class="nv-avatar">
       {% if guild.icon %}
         <img src="https://cdn.discordapp.com/icons/{{ guild.id }}/{{ guild.icon }}.png?size=128" alt="">
       {% else %}
@@ -22,63 +62,254 @@
   </div>
 </div>
 
-<div class="feature-grid server-feature-grid">
-
-  <a class="feature-card" href="#overview">
-    <div class="feature-top">
-      <span class="feature-icon icon-blue">⌂</span>
+<div class="nv-layout">
+  <nav class="nv-nav">
+    <strong>Server settings</strong>
+    <div class="nv-nav-links">
+      <a href="#overview">⌂ Overview</a>
+      <a href="#moderation">⚒ Moderation</a>
+      <a href="#automod">⛨ AutoMod</a>
+      <a href="#autoroles">♙ Autoroles</a>
+      <a href="#logs">▤ Logs</a>
+      <a href="#tickets">✉ Tickets</a>
     </div>
-    <h3>Overview</h3>
-    <p>View your server and bot information.</p>
-  </a>
-
-  <a class="feature-card" href="#moderation">
-    <div class="feature-top">
-      <span class="feature-icon icon-purple">⚒</span>
+    <div class="nv-actions">
+      <button class="nv-btn" id="reload-settings" type="button">Load settings</button>
+      <button class="nv-btn nv-btn-primary" id="save-settings" type="button">Save settings</button>
+      <span class="nv-status" id="settings-status" role="status" aria-live="polite">Loading settings…</span>
     </div>
-    <h3>Moderation</h3>
-    <p>Manage warnings, timeouts and bans.</p>
-  </a>
+  </nav>
 
-  <a class="feature-card" href="#automod">
-    <div class="feature-top">
-      <span class="feature-icon icon-pink">⛨</span>
-    </div>
-    <h3>AutoMod</h3>
-    <p>Configure anti-spam and message filters.</p>
-  </a>
+  <main>
+    <section class="nv-panel" id="overview">
+      <h2>Overview</h2>
+      <p class="nv-desc">Your server's Novix configuration.</p>
+      <div class="nv-fields">
+        <div class="nv-field">
+          <label>Server</label>
+          <input value="{{ guild.name }}" disabled>
+        </div>
+        <div class="nv-field">
+          <label>Server ID</label>
+          <input value="{{ guild.id }}" disabled>
+        </div>
+      </div>
+      <p class="nv-desc" style="margin-top:16px;margin-bottom:0">
+        Settings are stored in Supabase. Bot integration is a separate step.
+      </p>
+    </section>
 
-  <a class="feature-card" href="#autoroles">
-    <div class="feature-top">
-      <span class="feature-icon icon-blue">♙</span>
-    </div>
-    <h3>Autoroles</h3>
-    <p>Choose roles assigned to new members.</p>
-  </a>
+    <section class="nv-panel" id="moderation">
+      <h2>Moderation</h2>
+      <p class="nv-desc">Configure the default behaviour for moderation tools.</p>
+      <div class="nv-fields">
+        <div class="nv-field">
+          <label for="default-timeout">Default timeout duration (minutes)</label>
+          <input id="default-timeout" data-setting="default_timeout_minutes" type="number" min="1" max="40320" value="10">
+          <small>Used as a preferred default, once supported by the bot.</small>
+        </div>
+        <div class="nv-field">
+          <label for="mod-log-channel">Moderation log channel ID</label>
+          <input id="mod-log-channel" data-setting="moderation_log_channel_id" placeholder="Enter a Discord channel ID">
+        </div>
+        <label class="nv-check">
+          <input type="checkbox" data-setting="moderation_enabled" checked>
+          <span>Enable dashboard moderation settings<small>Stores your preference; it does not yet enable or disable bot commands.</small></span>
+        </label>
+      </div>
+    </section>
 
-  <a class="feature-card" href="#logs">
-    <div class="feature-top">
-      <span class="feature-icon icon-purple">▤</span>
-    </div>
-    <h3>Logs</h3>
-    <p>Choose where server events are recorded.</p>
-  </a>
+    <section class="nv-panel" id="automod">
+      <h2>AutoMod</h2>
+      <p class="nv-desc">Choose which automatic protections you want configured.</p>
+      <div class="nv-fields">
+        <label class="nv-check">
+          <input type="checkbox" data-setting="automod_enabled">
+          <span>Enable AutoMod<small>Master preference for automatic moderation.</small></span>
+        </label>
+        <label class="nv-check">
+          <input type="checkbox" data-setting="anti_spam_enabled">
+          <span>Anti-spam<small>Detect repeated messages.</small></span>
+        </label>
+        <label class="nv-check">
+          <input type="checkbox" data-setting="anti_link_enabled">
+          <span>Anti-link<small>Configure link filtering.</small></span>
+        </label>
+        <label class="nv-check">
+          <input type="checkbox" data-setting="anti_invite_enabled">
+          <span>Discord invite filtering<small>Configure invite-link filtering.</small></span>
+        </label>
+        <div class="nv-field">
+          <label for="spam-limit">Message limit</label>
+          <input id="spam-limit" data-setting="spam_message_limit" type="number" min="2" max="20" value="5">
+          <small>Preferred message count for spam detection.</small>
+        </div>
+        <div class="nv-field">
+          <label for="spam-window">Detection window (seconds)</label>
+          <input id="spam-window" data-setting="spam_window_seconds" type="number" min="1" max="60" value="5">
+        </div>
+      </div>
+    </section>
 
-  <a class="feature-card" href="#tickets">
-    <div class="feature-top">
-      <span class="feature-icon icon-pink">✉</span>
-    </div>
-    <h3>Tickets</h3>
-    <p>Manage support panels and ticket settings.</p>
-  </a>
+    <section class="nv-panel" id="autoroles">
+      <h2>Autoroles</h2>
+      <p class="nv-desc">Choose the role IDs that should be assigned to new members.</p>
+      <div class="nv-fields">
+        <label class="nv-check">
+          <input type="checkbox" data-setting="autorole_enabled">
+          <span>Enable autorole<small>Stores your preferred autorole state.</small></span>
+        </label>
+        <div class="nv-field">
+          <label for="autorole-id">Role ID</label>
+          <input id="autorole-id" data-setting="autorole_role_id" placeholder="Enter a Discord role ID">
+        </div>
+      </div>
+    </section>
 
+    <section class="nv-panel" id="logs">
+      <h2>Logs</h2>
+      <p class="nv-desc">Choose the channel for server event logs.</p>
+      <div class="nv-fields">
+        <div class="nv-field">
+          <label for="general-log-channel">General log channel ID</label>
+          <input id="general-log-channel" data-setting="log_channel_id" placeholder="Enter a Discord channel ID">
+        </div>
+        <div class="nv-field">
+          <label for="message-log-channel">Message log channel ID</label>
+          <input id="message-log-channel" data-setting="message_log_channel_id" placeholder="Enter a Discord channel ID">
+        </div>
+        <div class="nv-field">
+          <label for="member-log-channel">Member log channel ID</label>
+          <input id="member-log-channel" data-setting="member_log_channel_id" placeholder="Enter a Discord channel ID">
+        </div>
+        <div class="nv-field">
+          <label for="log-deletes">Deleted message logging</label>
+          <select id="log-deletes" data-setting="log_deleted_messages">
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="nv-panel" id="tickets">
+      <h2>Tickets</h2>
+      <p class="nv-desc">Configure the preferred ticket system settings.</p>
+      <div class="nv-fields">
+        <label class="nv-check">
+          <input type="checkbox" data-setting="tickets_enabled">
+          <span>Enable ticket settings<small>Stores your preferred ticket system state.</small></span>
+        </label>
+        <div class="nv-field">
+          <label for="ticket-category">Ticket category ID</label>
+          <input id="ticket-category" data-setting="ticket_category_id" placeholder="Enter a Discord category ID">
+        </div>
+        <div class="nv-field">
+          <label for="ticket-log-channel">Ticket log channel ID</label>
+          <input id="ticket-log-channel" data-setting="ticket_log_channel_id" placeholder="Enter a Discord channel ID">
+        </div>
+        <div class="nv-field">
+          <label for="ticket-support-role">Support role ID</label>
+          <input id="ticket-support-role" data-setting="ticket_support_role_id" placeholder="Enter a Discord role ID">
+        </div>
+      </div>
+    </section>
+  </main>
 </div>
 
-<div class="notice-card" style="margin-top: 24px;">
-  <span class="notice-icon">✦</span>
-  <div>
-    <h2>Welcome to Novix</h2>
-    <p>Your control panel layout is ready. The settings will need to be connected to your Discord bot before changes can take effect.</p>
-  </div>
-</div>
+<script>
+(() => {
+  const guildId = {{ guild.id | tojson }};
+  const apiUrl = `/api/server/${encodeURIComponent(guildId)}/settings`;
+  const status = document.getElementById("settings-status");
+  const controls = [...document.querySelectorAll("[data-setting]")];
+  const saveButton = document.getElementById("save-settings");
+  const reloadButton = document.getElementById("reload-settings");
+
+  function showStatus(message, state = "") {
+    status.textContent = message;
+    status.dataset.state = state;
+  }
+
+  function setControlValue(control, value) {
+    if (control.type === "checkbox") {
+      control.checked = Boolean(value);
+    } else if (control.tagName === "SELECT" && typeof value === "boolean") {
+      control.value = String(value);
+    } else if (value !== null && value !== undefined) {
+      control.value = String(value);
+    } else {
+      control.value = "";
+    }
+  }
+
+  function collectSettings() {
+    const settings = {};
+    for (const control of controls) {
+      settings[control.dataset.setting] =
+        control.type === "checkbox" ? control.checked :
+        control.type === "number" ? Number(control.value || 0) :
+        control.tagName === "SELECT" && ["true", "false"].includes(control.value)
+          ? control.value === "true"
+          : control.value.trim();
+    }
+    return settings;
+  }
+
+  async function loadSettings() {
+    reloadButton.disabled = true;
+    showStatus("Loading…");
+    try {
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: { "Accept": "application/json" }
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || `Request failed (${response.status})`);
+      }
+
+      const settings = data.settings ?? data;
+      for (const control of controls) {
+        if (Object.prototype.hasOwnProperty.call(settings, control.dataset.setting)) {
+          setControlValue(control, settings[control.dataset.setting]);
+        }
+      }
+      showStatus("Settings loaded", "success");
+    } catch (error) {
+      showStatus(`Could not load settings: ${error.message}`, "error");
+    } finally {
+      reloadButton.disabled = false;
+    }
+  }
+
+  async function saveSettings() {
+    saveButton.disabled = true;
+    showStatus("Saving…");
+    try {
+      const response = await fetch(apiUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(collectSettings())
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || `Request failed (${response.status})`);
+      }
+      showStatus("Settings saved to Supabase", "success");
+    } catch (error) {
+      showStatus(`Could not save settings: ${error.message}`, "error");
+    } finally {
+      saveButton.disabled = false;
+    }
+  }
+
+  saveButton.addEventListener("click", saveSettings);
+  reloadButton.addEventListener("click", loadSettings);
+  loadSettings();
+})();
+</script>
 {% endblock %}
