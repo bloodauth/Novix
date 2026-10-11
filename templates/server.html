@@ -34,13 +34,11 @@
   .nv-status { font-size: 13px; color: var(--text-muted, #9ca3af); }
   .nv-status[data-state="error"] { color: #f87171; }
   .nv-status[data-state="success"] { color: #4ade80; }
-  .nv-wide { grid-column: 1 / -1; }
   @media (max-width: 760px) {
     .nv-layout { grid-template-columns: 1fr; }
     .nv-nav { position: static; }
     .nv-nav-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .nv-fields { grid-template-columns: 1fr; }
-    .nv-wide { grid-column: auto; }
   }
 </style>
 
@@ -106,7 +104,7 @@
         <div class="nv-field">
           <label for="default-timeout">Default timeout duration (minutes)</label>
           <input id="default-timeout" data-setting="default_timeout_minutes" type="number" min="1" max="40320" value="10">
-          <small>Used as a preferred default, once supported by the bot.</small>
+          <small>Preferred default once supported by the bot.</small>
         </div>
         <div class="nv-field">
           <label for="mod-log-channel">Moderation log channel ID</label>
@@ -114,35 +112,34 @@
         </div>
         <label class="nv-check">
           <input type="checkbox" data-setting="moderation_enabled" checked>
-          <span>Enable dashboard moderation settings<small>Stores your preference; it does not yet enable or disable bot commands.</small></span>
+          <span>Enable moderation preference<small>Stores your preference; bot integration is still needed.</small></span>
         </label>
       </div>
     </section>
 
     <section class="nv-panel" id="automod">
       <h2>AutoMod</h2>
-      <p class="nv-desc">Choose which automatic protections you want configured.</p>
+      <p class="nv-desc">Configure automatic protection preferences.</p>
       <div class="nv-fields">
         <label class="nv-check">
           <input type="checkbox" data-setting="automod_enabled">
-          <span>Enable AutoMod<small>Master preference for automatic moderation.</small></span>
+          <span>Enable AutoMod<small>Master AutoMod preference.</small></span>
         </label>
         <label class="nv-check">
           <input type="checkbox" data-setting="anti_spam_enabled">
-          <span>Anti-spam<small>Detect repeated messages.</small></span>
+          <span>Anti-spam<small>Repeated-message filtering preference.</small></span>
         </label>
         <label class="nv-check">
           <input type="checkbox" data-setting="anti_link_enabled">
-          <span>Anti-link<small>Configure link filtering.</small></span>
+          <span>Anti-link<small>Link filtering preference.</small></span>
         </label>
         <label class="nv-check">
           <input type="checkbox" data-setting="anti_invite_enabled">
-          <span>Discord invite filtering<small>Configure invite-link filtering.</small></span>
+          <span>Discord invite filtering<small>Invite-link filtering preference.</small></span>
         </label>
         <div class="nv-field">
           <label for="spam-limit">Message limit</label>
           <input id="spam-limit" data-setting="spam_message_limit" type="number" min="2" max="20" value="5">
-          <small>Preferred message count for spam detection.</small>
         </div>
         <div class="nv-field">
           <label for="spam-window">Detection window (seconds)</label>
@@ -153,11 +150,11 @@
 
     <section class="nv-panel" id="autoroles">
       <h2>Autoroles</h2>
-      <p class="nv-desc">Choose the role IDs that should be assigned to new members.</p>
+      <p class="nv-desc">Choose a role to assign to new members.</p>
       <div class="nv-fields">
         <label class="nv-check">
           <input type="checkbox" data-setting="autorole_enabled">
-          <span>Enable autorole<small>Stores your preferred autorole state.</small></span>
+          <span>Enable autorole<small>Stores your autorole preference.</small></span>
         </label>
         <div class="nv-field">
           <label for="autorole-id">Role ID</label>
@@ -168,7 +165,7 @@
 
     <section class="nv-panel" id="logs">
       <h2>Logs</h2>
-      <p class="nv-desc">Choose the channel for server event logs.</p>
+      <p class="nv-desc">Choose channels for server event logs.</p>
       <div class="nv-fields">
         <div class="nv-field">
           <label for="general-log-channel">General log channel ID</label>
@@ -194,11 +191,11 @@
 
     <section class="nv-panel" id="tickets">
       <h2>Tickets</h2>
-      <p class="nv-desc">Configure the preferred ticket system settings.</p>
+      <p class="nv-desc">Configure ticket system preferences.</p>
       <div class="nv-fields">
         <label class="nv-check">
           <input type="checkbox" data-setting="tickets_enabled">
-          <span>Enable ticket settings<small>Stores your preferred ticket system state.</small></span>
+          <span>Enable ticket settings<small>Stores your preference.</small></span>
         </label>
         <div class="nv-field">
           <label for="ticket-category">Ticket category ID</label>
@@ -293,7 +290,7 @@
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        body: JSON.stringify(collectSettings())
+        body: JSON.stringify({ settings: collectSettings() })
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
